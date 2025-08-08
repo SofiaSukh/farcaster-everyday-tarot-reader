@@ -8,6 +8,10 @@
   ],
   "rewrites": [
     {
+      "source": "/og-image.png",
+      "destination": "/og-image.png"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
