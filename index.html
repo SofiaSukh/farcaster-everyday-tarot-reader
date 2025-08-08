@@ -4,7 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Daily Tarot Reader</title>
-  <script src="https://unpkg.com/@farcaster/miniapp-sdk@latest/dist/index.js"></script>
+  <script type="module">
+    import { sdk } from 'https://esm.sh/@farcaster/miniapp-sdk'
+  </script>
   
   <!-- Farcaster Mini App Meta Tags -->
   <meta name="farcaster:app" content="Daily Tarot Reader" />
@@ -290,7 +292,6 @@
 
   <script>
     // Initialize Farcaster Mini App SDK
-    let miniApp;
     let currentUser = null;
     let currentCard = null;
     let hasDrawnToday = false;
@@ -457,12 +458,12 @@
       
       try {
         // Check if we're in a Farcaster environment
-        if (typeof window.MiniApp !== 'undefined') {
-          miniApp = new window.MiniApp();
-          await miniApp.ready();
+        if (typeof sdk !== 'undefined') {
+          // Call ready() to hide the splash screen and display the app
+          await sdk.actions.ready();
           
           // Get user context
-          const context = await miniApp.getContext();
+          const context = await sdk.getContext();
           currentUser = context.user;
           
           // Update user info display
@@ -545,9 +546,9 @@ ${currentCard.reading}
 
 ✨ Drawn with the Daily Tarot Reader mini-app on Farcaster`;
 
-        if (miniApp) {
+        if (typeof sdk !== 'undefined') {
           // Use Farcaster's share functionality
-          await miniApp.share({
+          await sdk.actions.share({
             text: shareText,
             embeds: [{
               url: window.location.href,
