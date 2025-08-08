@@ -13,8 +13,5 @@
   "license": "MIT",
   "devDependencies": {
     "serve": "^14.2.1"
-  },
-  "dependencies": {
-    "@vercel/og": "^0.6.2"
   }
 }
