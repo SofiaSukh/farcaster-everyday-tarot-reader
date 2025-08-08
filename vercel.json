@@ -20,12 +20,12 @@
   ],
   "routes": [
     {
-      "src": "/.well-known/farcaster.json",
-      "dest": "/.well-known/farcaster.json"
-    },
-    {
       "src": "/og-image.png",
       "dest": "/og-image.png"
+    },
+    {
+      "src": "/.well-known/farcaster.json",
+      "dest": "/.well-known/farcaster.json"
     },
     {
       "src": "/(.*)",
