@@ -2,19 +2,15 @@
   "version": 2,
   "builds": [
     {
-      "src": "*.html",
+      "src": "public/**",
       "use": "@vercel/static"
     },
     {
-      "src": "*.png",
+      "src": "*.html",
       "use": "@vercel/static"
     }
   ],
   "rewrites": [
-    {
-      "source": "/og-image.png",
-      "destination": "/og-image.png"
-    },
     {
       "source": "/(.*)",
       "destination": "/index.html"
