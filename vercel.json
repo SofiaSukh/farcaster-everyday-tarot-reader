@@ -2,29 +2,18 @@
   "version": 2,
   "builds": [
     {
-      "src": "public/**",
-      "use": "@vercel/static"
-    },
-    {
       "src": "*.html",
       "use": "@vercel/static"
     }
   ],
-  "rewrites": [
+  "routes": [
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
-  ],
-  "headers": [
+      "src": "/og-image.png",
+      "dest": "/og-image.png"
+    },
     {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "X-Frame-Options",
-          "value": "ALLOWALL"
-        }
-      ]
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }
