@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daily Tarot Reader</title>
+  <script src="https://unpkg.com/@farcaster/miniapp-sdk@latest/dist/index.js"></script>
+  
+  <!-- Farcaster Frame Meta Tags -->
+  <meta property="fc:frame" content="vNext" />
+  <meta property="fc:frame:image" content="https://your-vercel-domain.vercel.app/og-image.png" />
+  <meta property="fc:frame:button:1" content="Draw Your Daily Card" />
+  <meta property="fc:frame:post_url" content="https://your-vercel-domain.vercel.app/api/frame" />
+  
+  <!-- Open Graph Meta Tags for Farcaster Embed -->
+  <meta property="og:title" content="Daily Tarot Reader" />
+  <meta property="og:description" content="Discover what the universe has in store for you today with your daily tarot reading" />
+  <meta property="og:image" content="https://your-vercel-domain.vercel.app/og-image.png" />
+  <meta property="og:url" content="https://your-vercel-domain.vercel.app" />
+  <meta property="og:type" content="website" />
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      color: #fff;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    .stars {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .star {
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle 3s infinite;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+
+    .container {
+      position: relative;
+      z-index: 2;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      color: #b8c5d6;
+      margin-bottom: 30px;
+    }
+
+    .user-info {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 15px;
+      margin-bottom: 30px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      margin: 20px 0;
+    }
+    
+    .loading.show { 
+      display: block; 
+    }
+    
+    .error {
+      background: rgba(255,0,0,0.1);
+      border: 1px solid rgba(255,0,0,0.3);
+      border-radius: 10px;
+      padding: 15px;
+      margin: 10px 0;
+      color: #ff6b6b;
+    }
+
+    .card-area {
+      margin: 40px 0;
+    }
+
+    .card-wrapper {
+      perspective: 1000px;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      width: 200px;
+      height: 300px;
+      margin: 0 auto;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.8s ease-in-out;
+      cursor: pointer;
+    }
+
+    .card.flipped {
+      transform: rotateY(180deg);
+    }
+
+    .card-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-back {
+      background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+      border: 2px solid #fff;
+    }
+
+    .card-back-pattern {
+      font-size: 3rem;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .card-front {
+      background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
+      transform: rotateY(180deg);
+      padding: 20px;
+      text-align: center;
+    }
+
+    .card-name {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #fff;
+    }
+
+    .card-symbol {
+      font-size: 2rem;
+      margin-bottom: 15px;
+    }
+
+    .card-meaning {
+      font-size: 0.9rem;
+      line-height: 1.4;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .draw-button, .share-button {
+      background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+      border: none;
+      color: white;
+      padding: 15px 30px;
+      border-radius: 25px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      margin: 10px;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .draw-button:hover, .share-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .share-button {
+      background: linear-gradient(45deg, #667eea, #764ba2);
+    }
+
+    .reading {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 25px;
+      margin-top: 30px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .reading h3 {
+      color: #4ecdc4;
+      margin-bottom: 15px;
+      font-size: 1.3rem;
+    }
+
+    .reading p {
+      line-height: 1.6;
+      color: #b8c5d6;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 15px;
+      }
+      
+      h1 {
+        font-size: 2rem;
+      }
+      
+      .card {
+        width: 180px;
+        height: 270px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="stars" id="stars"></div>
+
+  <div class="container">
+    <h1>Daily Tarot Reading</h1>
+    <p class="subtitle">Discover what the universe has in store for you today</p>
+
+    <div class="user-info" id="userInfo">
+      Welcome to your daily tarot reading!
+    </div>
+
+    <div class="loading" id="loading">
+      <p>Connecting to the mystical realm... ✨</p>
+    </div>
+
+    <div class="error" id="error" style="display: none;"></div>
+
+    <div class="card-area">
+      <div class="card-wrapper">
+        <div class="card" id="tarotCard">
+          <div class="card-face card-back">
+            <div class="card-back-pattern">✨</div>
+          </div>
+          <div class="card-face card-front" id="cardFront">
+            <div class="card-name" id="cardName"></div>
+            <div class="card-symbol" id="cardSymbol"></div>
+            <div class="card-meaning" id="cardMeaning"></div>
+          </div>
+        </div>
+      </div>
+
+      <button class="draw-button" id="drawButton" onclick="drawCard()">Draw Your Daily Card</button>
+      <button class="share-button" id="shareButton" onclick="shareReading()">Share Reading on Farcaster</button>
+    </div>
+
+    <div class="reading" id="reading" style="display: none;">
+      <h3>Today's Guidance</h3>
+      <p id="readingText"></p>
+    </div>
+  </div>
+
+  <script>
+    // Initialize Farcaster Mini App SDK
+    let miniApp;
+    let currentUser = null;
+    let currentCard = null;
+    let hasDrawnToday = false;
+
+    // Tarot Cards Data
+    const tarotCards = [
+      {
+        name: "The Fool",
+        symbol: "🃏",
+        meaning: "New beginnings, innocence, spontaneity",
+        reading: "The Fool invites you to embrace new adventures with an open heart. Trust your instincts and don't be afraid to take that first step into the unknown. Your journey is just beginning!"
+      },
+      {
+        name: "The Magician",
+        symbol: "🔮",
+        meaning: "Manifestation, resourcefulness, power",
+        reading: "The Magician reminds you that you have all the tools you need to create your reality. Focus your energy and willpower on your goals. Your potential is limitless!"
+      },
+      {
+        name: "The High Priestess",
+        symbol: "🌙",
+        meaning: "Intuition, mystery, inner knowledge",
+        reading: "The High Priestess calls you to trust your intuition and inner wisdom. Listen to your dreams and pay attention to the subtle signs around you. Your subconscious holds important answers."
+      },
+      {
+        name: "The Empress",
+        symbol: "👑",
+        meaning: "Fertility, nurturing, abundance",
+        reading: "The Empress brings abundance and creativity into your life. Nurture your relationships and projects with love and care. Growth and prosperity are on the horizon."
+      },
+      {
+        name: "The Emperor",
+        symbol: "⚡",
+        meaning: "Authority, structure, control",
+        reading: "The Emperor encourages you to take charge of your life with confidence and authority. Set clear boundaries and establish solid foundations for your goals."
+      },
+      {
+        name: "The Hierophant",
+        symbol: "📖",
+        meaning: "Tradition, conformity, morality",
+        reading: "The Hierophant suggests following established traditions and seeking guidance from mentors. There's wisdom in learning from those who have walked this path before."
+      },
+      {
+        name: "The Lovers",
+        symbol: "💕",
+        meaning: "Love, harmony, relationships",
+        reading: "The Lovers bring harmony and connection into your life. Whether romantic or platonic, meaningful relationships are highlighted. Choose with your heart."
+      },
+      {
+        name: "The Chariot",
+        symbol: "🏛️",
+        meaning: "Control, willpower, victory",
+        reading: "The Chariot represents determination and triumph over obstacles. Stay focused on your goals and maintain your willpower. Success is within reach!"
+      },
+      {
+        name: "Strength",
+        symbol: "🦁",
+        meaning: "Courage, persuasion, influence",
+        reading: "Strength reminds you that true power comes from within. Face challenges with courage and compassion. You have the inner strength to overcome any obstacle."
+      },
+      {
+        name: "The Hermit",
+        symbol: "🕯️",
+        meaning: "Soul-searching, introspection, solitude",
+        reading: "The Hermit calls for introspection and inner guidance. Take time for solitude and reflection. The answers you seek are within you."
+      },
+      {
+        name: "Wheel of Fortune",
+        symbol: "🎡",
+        meaning: "Good luck, karma, life cycles",
+        reading: "The Wheel of Fortune brings change and new opportunities. Embrace the cycles of life and trust that everything happens for a reason. Good fortune is turning your way!"
+      },
+      {
+        name: "Justice",
+        symbol: "⚖️",
+        meaning: "Justice, fairness, truth",
+        reading: "Justice calls for balance and fairness in your decisions. Consider all sides of a situation and act with integrity. Truth and fairness will prevail."
+      },
+      {
+        name: "The Hanged Man",
+        symbol: "🙃",
+        meaning: "Surrender, letting go, new perspective",
+        reading: "The Hanged Man suggests a new perspective through surrender. Sometimes letting go is the path to gaining clarity. Trust the process."
+      },
+      {
+        name: "Death",
+        symbol: "💀",
+        meaning: "Endings, change, transformation",
+        reading: "Death represents transformation and new beginnings. Let go of what no longer serves you. This ending is making way for something better."
+      },
+      {
+        name: "Temperance",
+        symbol: "🕊️",
+        meaning: "Balance, moderation, patience",
+        reading: "Temperance brings balance and harmony. Practice patience and moderation in all areas of your life. Find your center and maintain equilibrium."
+      },
+      {
+        name: "The Devil",
+        symbol: "😈",
+        meaning: "Shadow self, attachment, materialism",
+        reading: "The Devil asks you to examine your attachments and limiting beliefs. What's holding you back? Face your shadows to find freedom."
+      },
+      {
+        name: "The Tower",
+        symbol: "🗼",
+        meaning: "Sudden change, upheaval, revelation",
+        reading: "The Tower brings sudden change and revelation. While it may feel disruptive, this change is clearing the way for something better. Trust the process."
+      },
+      {
+        name: "The Star",
+        symbol: "⭐",
+        meaning: "Hope, faith, purpose",
+        reading: "The Star brings hope and inspiration. Keep faith in your dreams and trust that the universe is guiding you toward your purpose."
+      },
+      {
+        name: "The Moon",
+        symbol: "🌕",
+        meaning: "Illusion, fear, anxiety",
+        reading: "The Moon reveals hidden fears and illusions. Trust your intuition but be aware of deception. Things may not be as they seem."
+      },
+      {
+        name: "The Sun",
+        symbol: "☀️",
+        meaning: "Positivity, fun, warmth",
+        reading: "The Sun brings joy, success, and positive energy. Embrace the warmth and light in your life. Good times are ahead!"
+      },
+      {
+        name: "Judgement",
+        symbol: "👼",
+        meaning: "Judgement, rebirth, inner calling",
+        reading: "Judgement calls for spiritual awakening and rebirth. Listen to your inner calling and embrace transformation. A new chapter is beginning."
+      },
+      {
+        name: "The World",
+        symbol: "🌍",
+        meaning: "Completion, integration, accomplishment",
+        reading: "The World represents completion and wholeness. You've achieved a major milestone. Celebrate your accomplishments and prepare for new adventures!"
+      }
+    ];
+
+    // Create animated stars background
+    function createStars() {
+      const starsContainer = document.getElementById('stars');
+      const numberOfStars = 100;
+
+      for (let i = 0; i < numberOfStars; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        star.style.left = Math.random() * 100 + '%';
+        star.style.top = Math.random() * 100 + '%';
+        star.style.width = Math.random() * 3 + 'px';
+        star.style.height = star.style.width;
+        star.style.animationDelay = Math.random() * 3 + 's';
+        starsContainer.appendChild(star);
+      }
+    }
+
+    // Enhanced initialization with proper error handling
+    async function initializeMiniApp() {
+      const loading = document.getElementById('loading');
+      const error = document.getElementById('error');
+      
+      loading.classList.add('show');
+      
+      try {
+        // Check if we're in a Farcaster environment
+        if (typeof window.MiniApp !== 'undefined') {
+          miniApp = new window.MiniApp();
+          await miniApp.ready();
+          
+          // Get user context
+          const context = await miniApp.getContext();
+          currentUser = context.user;
+          
+          // Update user info display
+          if (currentUser) {
+            document.getElementById('userInfo').innerHTML = 
+              `Welcome, ${currentUser.displayName || currentUser.username || 'mystic friend'}! ✨`;
+          }
+          
+          console.log('Mini App initialized successfully');
+        } else {
+          console.log('Running outside Farcaster environment');
+          document.getElementById('userInfo').innerHTML = 'Welcome to your daily tarot reading! ✨';
+        }
+      } catch (err) {
+        console.error('Failed to initialize Mini App:', err);
+        error.style.display = 'block';
+        error.innerHTML = 'Unable to connect to Farcaster. You can still enjoy your tarot reading!';
+        document.getElementById('userInfo').innerHTML = 'Welcome to your daily tarot reading! ✨';
+      } finally {
+        loading.classList.remove('show');
+      }
+    }
+
+    // Draw a random tarot card
+    function drawCard() {
+      if (hasDrawnToday) {
+        alert('You can only draw one card per day! Come back tomorrow for a new reading.');
+        return;
+      }
+
+      const card = document.getElementById('tarotCard');
+      const drawButton = document.getElementById('drawButton');
+      const shareButton = document.getElementById('shareButton');
+      const reading = document.getElementById('reading');
+
+      // Disable draw button during animation
+      drawButton.disabled = true;
+      drawButton.textContent = 'Drawing...';
+
+      // Select random card
+      const randomCard = tarotCards[Math.floor(Math.random() * tarotCards.length)];
+      currentCard = randomCard;
+
+      // Update card content
+      document.getElementById('cardName').textContent = randomCard.name;
+      document.getElementById('cardSymbol').textContent = randomCard.symbol;
+      document.getElementById('cardMeaning').textContent = randomCard.meaning;
+
+      // Flip card after a short delay
+      setTimeout(() => {
+        card.classList.add('flipped');
+        
+        // Show reading after card flip
+        setTimeout(() => {
+          document.getElementById('readingText').textContent = randomCard.reading;
+          reading.style.display = 'block';
+          reading.scrollIntoView({ behavior: 'smooth' });
+          
+          // Re-enable buttons
+          drawButton.disabled = false;
+          drawButton.textContent = 'Draw Your Daily Card';
+          shareButton.style.display = 'inline-block';
+          
+          hasDrawnToday = true;
+        }, 1000);
+      }, 500);
+    }
+
+    // Enhanced share function with better error handling
+    async function shareReading() {
+      if (!currentCard) {
+        alert('Please draw a card first!');
+        return;
+      }
+
+      try {
+        const shareText = `🔮 Daily Tarot Reading: ${currentCard.name} ${currentCard.symbol}
+
+${currentCard.reading}
+
+✨ Drawn with the Daily Tarot Reader mini-app on Farcaster`;
+
+        if (miniApp) {
+          // Use Farcaster's share functionality
+          await miniApp.share({
+            text: shareText,
+            embeds: [{
+              url: window.location.href,
+              title: 'Daily Tarot Reader',
+              description: 'Get your daily tarot reading on Farcaster'
+            }]
+          });
+          console.log('Reading shared successfully!');
+        } else {
+          // Fallback: copy to clipboard
+          await navigator.clipboard.writeText(shareText);
+          alert('Reading copied to clipboard! Share it on Farcaster manually.');
+        }
+      } catch (err) {
+        console.error('Failed to share reading:', err);
+        // Final fallback
+        const shareText = `🔮 Daily Tarot Reading: ${currentCard.name} ${currentCard.symbol}\n\n${currentCard.reading}\n\n✨ Drawn with the Daily Tarot Reader mini-app on Farcaster`;
+        navigator.clipboard.writeText(shareText).then(() => {
+          alert('Reading copied to clipboard!');
+        }).catch(() => {
+          alert('Unable to share automatically. Please copy the reading manually.');
+        });
+      }
+    }
+
+    // Initialize everything when the page loads
+    document.addEventListener('DOMContentLoaded', () => {
+      createStars();
+      initializeMiniApp();
+      
+      // Hide share button initially
+      document.getElementById('shareButton').style.display = 'none';
+    });
+  </script>
+</body>
+</html>
