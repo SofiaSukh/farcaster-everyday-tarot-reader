@@ -1,0 +1,16 @@
+{
+  "name": "Daily Tarot Reader",
+  "description": "Discover what the universe has in store for you today with your daily tarot reading",
+  "icon": "https://raw.githubusercontent.com/SofiaSukh/farcaster-everyday-tarot-reader/main/og-image.png",
+  "url": "https://farcaster-everyday-tarot-reader.vercel.app",
+  "permissions": [
+    "user:read",
+    "user:write"
+  ],
+  "features": [
+    "share"
+  ],
+  "version": "1.0.0",
+  "author": "SofiaSukh",
+  "type": "mini-app"
+}
