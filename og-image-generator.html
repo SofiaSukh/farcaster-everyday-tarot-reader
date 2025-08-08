@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Tarot Reader OG Image</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 1200px;
+            height: 630px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(2px 2px at 20px 30px, #eee, transparent), 
+                        radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), transparent), 
+                        radial-gradient(1px 1px at 90px 40px, #fff, transparent), 
+                        radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.6), transparent), 
+                        radial-gradient(2px 2px at 160px 30px, #ddd, transparent);
+            background-repeat: repeat;
+            background-size: 200px 100px;
+            opacity: 0.3;
+        }
+        
+        .content {
+            text-align: center;
+            z-index: 2;
+        }
+        
+        h1 {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            font-size: 1.5rem;
+            color: #b8c5d6;
+            margin-bottom: 30px;
+        }
+        
+        .card-icon {
+            font-size: 6rem;
+            margin: 20px 0;
+        }
+        
+        .farcaster-badge {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            color: #4ecdc4;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="stars"></div>
+    
+    <div class="content">
+        <div class="card-icon">🔮</div>
+        <h1>Daily Tarot Reader</h1>
+        <p class="subtitle">Discover what the universe has in store for you today</p>
+        <div class="farcaster-badge">✨ Farcaster Mini App</div>
+    </div>
+</body>
+</html>
