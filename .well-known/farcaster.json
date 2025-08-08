@@ -1,0 +1,25 @@
+{
+  "miniapp": {
+    "version": "1",
+    "name": "Daily Tarot Reader",
+    "iconUrl": "https://farcaster-everyday-tarot-reader.vercel.app/og-image.png",
+    "homeUrl": "https://farcaster-everyday-tarot-reader.vercel.app",
+    "splashImageUrl": "https://farcaster-everyday-tarot-reader.vercel.app/og-image.png",
+    "splashBackgroundColor": "#1a1a2e",
+    "subtitle": "Daily tarot readings",
+    "description": "Discover what the universe has in store for you today with your daily tarot reading",
+    "primaryCategory": "entertainment",
+    "tags": [
+      "tarot",
+      "daily",
+      "mystical",
+      "reading",
+      "fortune"
+    ],
+    "heroImageUrl": "https://farcaster-everyday-tarot-reader.vercel.app/og-image.png",
+    "tagline": "Daily tarot readings",
+    "ogTitle": "Daily Tarot Reader",
+    "ogDescription": "Discover what the universe has in store for you today with your daily tarot reading",
+    "ogImageUrl": "https://farcaster-everyday-tarot-reader.vercel.app/og-image.png"
+  }
+}

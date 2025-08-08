@@ -12,12 +12,16 @@
     {
       "src": "*.png",
       "use": "@vercel/static"
+    },
+    {
+      "src": ".well-known/**",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
-      "src": "/farcaster.json",
-      "dest": "/farcaster.json"
+      "src": "/.well-known/farcaster.json",
+      "dest": "/.well-known/farcaster.json"
     },
     {
       "src": "/og-image.png",
