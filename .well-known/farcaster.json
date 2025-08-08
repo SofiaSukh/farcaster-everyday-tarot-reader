@@ -1,4 +1,9 @@
 {
+  "accountAssociation": {
+    "header": "eyJmaWQiOjIxNDAzOSwidHlwZSI6ImF1dGgiLCJrZXkiOiIweGI5MWI3MUFmNjFhNmQ4MGQ3MGQ4RTAzODIyZTdCODQyNzhmNGM2QzAifQ",
+    "payload": "eyJkb21haW4iOiJmYXJjYXN0ZXItZXZlcnlkYXktdGFyb3QtcmVhZGVyLnZlcmNlbC5hcHAifQ",
+    "signature": "qo05r1t1n9HCSppCUnSDcUzjCbU5vx7XuzePK6uOyW5vA4BoKr2GZsU2tLAdmFQVX9jZUGqOz8qM9hSUHqOMPxw="
+  },
   "miniapp": {
     "version": "1",
     "name": "Daily Tarot Reader",
